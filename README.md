@@ -2,7 +2,8 @@
 
 # GPT Realtime Simple
 
-Minimal, end‑to‑end Python client that turns your microphone into a live conversation with an Azure OpenAI Realtime model (bi‑directional audio + transcription + model responses in near real‑time).
+Minimal, end‑to‑end Python client that turns your microphone into a live conversation with an Azure OpenAI Realtime model 
+(bi‑directional audio + transcription + model responses in near real‑time).
 
 </div>
 

@@ -1,4 +1,8 @@
-import os, json, base64, asyncio, signal
+import os
+import json
+import base64
+import asyncio
+import signal
 import numpy as np
 import sounddevice as sd
 import websockets
@@ -33,7 +37,9 @@ async def playback_consumer(play_q: asyncio.Queue, stop: asyncio.Event):
     # sd.default.device = (1, None)
     sd.default.samplerate = SR
     OUT_SR = 24000
-    stream = sd.RawOutputStream(samplerate=OUT_SR, channels=CH, dtype="int16", blocksize=0)
+    stream = sd.RawOutputStream(
+        samplerate=OUT_SR, channels=CH, dtype="int16", blocksize=0
+    )
     stream.start()
     try:
         while not stop.is_set():
@@ -53,12 +59,10 @@ async def reader(ws, play_q: asyncio.Queue):
         msg = await ws.recv()
         evt = json.loads(msg)
         t = evt.get("type")
-        # print(t)  # <- uncomment to debug all server events
         if t == "session.created":
             print("session created")
         elif t in ("response.audio.delta", "response.output_audio.delta"):
-            # new name (Azure docs) and old name (samples)
-            b64 = evt.get("delta") or evt.get("audio")  # some servers use "delta"
+            b64 = evt.get("delta") or evt.get("audio")
             if b64:
                 await play_q.put(base64.b64decode(b64))
         elif t in (
@@ -78,12 +82,20 @@ async def reader(ws, play_q: asyncio.Queue):
 
 async def mic_producer(ws, stop: asyncio.Event):
     q = asyncio.Queue(maxsize=10)
-    def cb(indata, frames, time, status):
-        try: q.put_nowait(indata.copy())
-        except asyncio.QueueFull: pass
 
-    stream = sd.InputStream(channels=CH, samplerate=SR, dtype="float32",
-                            blocksize=CHUNK_SAMPLES, callback=cb)
+    def cb(indata, frames, time, status):
+        try:
+            q.put_nowait(indata.copy())
+        except asyncio.QueueFull:
+            pass
+
+    stream = sd.InputStream(
+        channels=CH,
+        samplerate=SR,
+        dtype="float32",
+        blocksize=CHUNK_SAMPLES,
+        callback=cb,
+    )
     stream.start()
     try:
         while not stop.is_set():
@@ -92,11 +104,14 @@ async def mic_producer(ws, stop: asyncio.Event):
             except asyncio.TimeoutError:
                 continue
             pcm = float32_to_pcm16(frame)
-            await ws.send(json.dumps({
-                "type":"input_audio_buffer.append",
-                "audio": base64.b64encode(pcm).decode("ascii")
-            }))
-            # NO manual commit in server_vad mode
+            await ws.send(
+                json.dumps(
+                    {
+                        "type": "input_audio_buffer.append",
+                        "audio": base64.b64encode(pcm).decode("ascii"),
+                    }
+                )
+            )
     finally:
         stream.stop()
         stream.close()
@@ -110,8 +125,8 @@ async def send_session_update(ws):
                 "session": {
                     "voice": "alloy",
                     "modalities": ["text", "audio"],
-                    "input_audio_format": "pcm16",  # <-- string, not object
-                    "output_audio_format": "pcm16",  # <-- string, not object
+                    "input_audio_format": "pcm16",
+                    "output_audio_format": "pcm16",
                     "turn_detection": {
                         "type": "server_vad",
                         "threshold": 0.5,
@@ -137,8 +152,8 @@ async def main():
 
     async with websockets.connect(
         WS_URL,
-        additional_headers=[("api-key", API_KEY)],  # was: extra_headers={...}
-        subprotocols=["realtime"],  # replaces Sec-WebSocket-Protocol header
+        additional_headers=[("api-key", API_KEY)],
+        subprotocols=["realtime"],
         max_size=None,
     ) as ws:
         await send_session_update(ws)

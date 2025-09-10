@@ -5,6 +5,8 @@
 Minimal, end‑to‑end Python client that turns your microphone into a live conversation with an Azure OpenAI Realtime model 
 (bi‑directional audio + transcription + model responses in near real‑time).
 
+[Inspo](https://github.com/Azure-Samples/aoai-realtime-audio-sdk/blob/main/python/rtclient/low_level_client.py)
+
 </div>
 
 ---

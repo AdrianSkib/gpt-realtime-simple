@@ -253,7 +253,7 @@ Open to improvements—add tests, a GUI, or performance metrics. Please keep exa
 | Transcription | ✔ |
 | Audio Playback | ✔ |
 | Custom Voice | ✔ (edit session config) |
-| Barge‑In | ✖ (potential enhancement) |
+| Barge‑In | ✔ |
 | GUI | ✖ |
 
 ---

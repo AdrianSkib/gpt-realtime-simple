@@ -133,7 +133,7 @@ async def send_session_update(ws):
                         "silence_duration_ms": 600,
                     },
                     "input_audio_transcription": {"model": "whisper-1"},
-                    "instructions": "Be concise and helpful. Speak clearly.",
+                    "instructions": "Be concise and helpful. Speak clearly. Always speak in english.",
                 },
             }
         )
@@ -169,7 +169,7 @@ async def main():
             json.dumps(
                 {
                     "type": "response.create",
-                    "response": {"instructions": "Greet the user briefly."},
+                    "response": {"instructions": "Greet the user briefly in english."},
                 }
             )
         )

@@ -1,7 +1,7 @@
 [project]
 name = "gpt-realtime-simple"
 version = "0.1.0"
-description = "Add your description here"
+description = "Simple example of using the Azure OpenAI GPT Realtime API."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
